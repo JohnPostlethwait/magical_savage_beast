@@ -15,16 +15,16 @@ end
 # Include your application configuration below
 # @WBH@ would be nice for this to not be necessary somehow...
 # PASSWORD_SALT = '48e45be7d489cbb0ab582d26e2168621' unless Object.const_defined?(:PASSWORD_SALT)
-# Module.class_eval do
-#   def expiring_attr_reader(method_name, value)
-#     class_eval(<<-EOS, __FILE__, __LINE__)
-#       def #{method_name}
-#         class << self; attr_reader :#{method_name}; end
-#         @#{method_name} = eval(%(#{value}))
-#       end
-#     EOS
-#   end
-# end
+Module.class_eval do
+  def expiring_attr_reader(method_name, value)
+    class_eval(<<-EOS, __FILE__, __LINE__)
+      def #{method_name}
+        class << self; attr_reader :#{method_name}; end
+        @#{method_name} = eval(%(#{value}))
+      end
+    EOS
+  end
+end
 
 # TODO: make the generator add "map.from_plugin :magical_savage_beast" to the routes
 # Define the means by which to add our own routing to Rails' routing
@@ -64,12 +64,17 @@ end
 #ActionView::Base.send :include, ApplicationHelper
 #--------------------------------------------------------------------------------
 
-%w{ models controllers helpers views }.each do |dir|
+%w{ models controllers helpers }.each do |dir|
   path = File.join(directory, 'lib', dir)
   $LOAD_PATH << path
   ActiveSupport::Dependencies.load_paths << path
-  ActiveSupport::Dependencies.load_once_paths.delete(path)
+  ActiveSupport::Dependencies.load_once_paths.delete path
 end
+
+ActionController::Base.view_paths.insert 1, File.join(directory, 'lib', 'views') # push it just underneath the app
+
+ActionView::Base.send :include, ApplicationHelper
+ActionView::Base.send :include, ForumsHelper
 
 begin
   require 'gettext/rails'
@@ -81,4 +86,3 @@ rescue MissingSourceFile, LoadError
     end
   end
 end
-

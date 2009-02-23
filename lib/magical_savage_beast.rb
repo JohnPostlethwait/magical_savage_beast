@@ -61,6 +61,10 @@ module MagicalSavageBeast
     module ClassMethods
       def magical_savage_controller_methods
         self.send :include, MagicalSavageBeast::ControllerMethods::InstanceMethods
+
+        class_eval do
+          helper_method :admin?
+        end
       end
     end
 
