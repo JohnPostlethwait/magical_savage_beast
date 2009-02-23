@@ -1,5 +1,5 @@
 class Topic < ActiveRecord::Base
-  validates_presence_of :forum, :user, :title
+  validates_presence_of :forum, :<%= singular_name %>, :title
   before_create  :set_default_replied_at_and_sticky
   before_update  :check_for_changing_forums
   after_save     :update_forum_counter_cache
@@ -7,22 +7,22 @@ class Topic < ActiveRecord::Base
   after_destroy  :update_forum_counter_cache
 
   belongs_to :forum
-  belongs_to :user
+  belongs_to :<%= singular_name %>
   belongs_to :last_post, :class_name => "Post", :foreign_key => 'last_post_id'
   has_many :monitorships
-  has_many :monitors, :through => :monitorships, :conditions => ["#{Monitorship.table_name}.active = ?", true], :source => :user
+  has_many :monitors, :through => :monitorships, :conditions => ["#{Monitorship.table_name}.active = ?", true], :source => :<%= singular_name %>
 
   has_many :posts,     :order => "#{Post.table_name}.created_at", :dependent => :delete_all
   has_one  :recent_post, :order => "#{Post.table_name}.created_at DESC", :class_name => 'Post'
   
-  has_many :voices, :through => :posts, :source => :user, :uniq => true
-  belongs_to :replied_by_user, :foreign_key => "replied_by", :class_name => "User"
+  has_many :voices, :through => :posts, :source => :<%= singular_name %>, :uniq => true
+  belongs_to :replied_by_user, :foreign_key => "replied_by", :class_name => "<%= class_name %>"
 
   attr_accessible :title
   # to help with the create form
   attr_accessor :body
-	
-	def hit!
+  
+  def hit!
     self.class.increment_counter :hits, id
   end
 
@@ -36,8 +36,8 @@ class Topic < ActiveRecord::Base
     [(posts_count.to_f / Post.per_page).ceil.to_i, 1].max
   end
 
-  def editable_by?(user)
-    user && (user.id == user_id || user.admin? || user.moderator_of?(forum_id))
+  def editable_by?(<%= singular_name %>)
+    <%= singular_name %> && (<%= singular_name %>.id == <%= singular_name %>_id || <%= singular_name %>.admin? || <%= singular_name %>.moderator_of?(forum_id))
   end
   
   def update_cached_post_fields(post)
@@ -45,7 +45,7 @@ class Topic < ActiveRecord::Base
     remaining_post = post.frozen? ? recent_post : post
     if remaining_post
       self.class.update_all(['replied_at = ?, replied_by = ?, last_post_id = ?, posts_count = ?', 
-        remaining_post.created_at, remaining_post.user_id, remaining_post.id, posts.count], ['id = ?', id])
+        remaining_post.created_at, remaining_post.<%= singular_name %>_id, remaining_post.id, posts.count], ['id = ?', id])
     else
       self.destroy
     end
@@ -83,7 +83,7 @@ class Topic < ActiveRecord::Base
         forum_conditions       << Post.count(:id, :conditions => {:forum_id => forum_id})
       end
       # User doesn't have update_posts_count method in SB2, as reported by Ryan
-			#@voices.each &:update_posts_count if @voices
+      #@voices.each &:update_posts_count if @voices
       Forum.update_all forum_conditions, ['id = ?', forum_id]
       @old_forum_id = @voices = nil
     end

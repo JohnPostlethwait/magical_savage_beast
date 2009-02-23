@@ -11,7 +11,7 @@
 <p class="subtitle">
 <%%= feed_icon_tag "Recent Posts"[:recent_posts], formatted_posts_path(:format => 'rss') %>
 <%%= '{count} topic(s)'[(count=Topic.count)==1 ? :topic_count : :topics_count, number_with_delimiter(count)] %>, 
-<%%= '{count} post(s)'[(count=Post.count)==1 ? :post_count : :posts_count, number_with_delimiter(count)] %>, <%%= '{count} voice(s)'[(count=User.count(:conditions => "posts_count > 0"))==1 ? :voice_count : :voices_count, number_with_delimiter(count)] %>
+<%%= '{count} post(s)'[(count=Post.count)==1 ? :post_count : :posts_count, number_with_delimiter(count)] %>, <%%= '{count} voice(s)'[(count=<%= class_name %>.count(:conditions => "posts_count > 0"))==1 ? :voice_count : :voices_count, number_with_delimiter(count)] %>
   
 </p>
 
@@ -50,7 +50,7 @@
     <td class="inv lp">
       <%% if forum.recent_post %>
         <%%= time_ago_in_words(forum.recent_post.created_at) %><br />
-        <%%= 'by {user}'[:by_user,"<strong>#{h(forum.recent_post.user.display_name)}</strong>"] %>
+        <%%= 'by {user}'[:by_user,"<strong>#{h(forum.recent_post.<%= singular_name %>.display_name)}</strong>"] %>
         <span>(<%%= link_to 'view'[], forum_topic_path(:forum_id => forum, :id => forum.recent_post.topic_id, :page => forum.recent_post.topic.last_page, :anchor => forum.recent_post.dom_id) %>)</span>
       <%% end %>
     </td>
@@ -62,12 +62,12 @@
   <%%= link_to 'Recent posts'[:recent_posts], all_posts_path %>
 </p>
 
-<%% online_users = User.currently_online -%>
+<%% online_users = <%= class_name %>.currently_online -%>
 <%% unless !online_users || online_users.empty? %>
 <div class="stats">
 <div class="users">
 <%% unless !online_users || online_users.empty? %>
-<%%= 'Users online:'[:users_online] %> <%%= online_users.map { |u| link_to "<strong>#{h u.display_name}</strong>", user_path(u) } * ", " %><br />
+<%%= 'Users online:'[:users_online] %> <%%= online_users.map { |u| link_to "<strong>#{h u.display_name}</strong>", <%= singular_name %>_path(u) } * ", " %><br />
 <%% end %>
 </div>
 </div>

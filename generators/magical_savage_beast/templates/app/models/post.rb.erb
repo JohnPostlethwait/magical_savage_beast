@@ -2,7 +2,7 @@ class Post < ActiveRecord::Base
   def self.per_page() 25 end
 
   belongs_to :forum
-  belongs_to :user
+  belongs_to :<%= singular_name %>
   belongs_to :topic
 
   format_attribute :body
@@ -10,24 +10,24 @@ class Post < ActiveRecord::Base
   after_create  :update_cached_fields
   after_destroy :update_cached_fields
 
-  validates_presence_of :user_id, :body, :topic
+  validates_presence_of :<%= singular_name %>_id, :body, :topic
   attr_accessible :body	
-	
-  def editable_by?(user)
-    user && (user.id == user_id || user.admin? || user.moderator_of?(forum_id))
+
+  def editable_by?(<%= singular_name %>)
+    <%= singular_name %> && (<%= singular_name %>.id == <%= singular_name %>_id || <%= singular_name %>.admin? || <%= singular_name %>.moderator_of?(forum_id))
   end
-  
+
   def to_xml(options = {})
     options[:except] ||= []
     options[:except] << :topic_title << :forum_name
     super
   end
-  
+
   protected
     # using count isn't ideal but it gives us correct caches each time
     def update_cached_fields
       Forum.update_all ['posts_count = ?', Post.count(:id, :conditions => {:forum_id => forum_id})], ['id = ?', forum_id]
-      User.update_posts_count(user_id)
+      <%= class_name %>.update_posts_count(<%= singular_name %>_id)
       topic.update_cached_post_fields(self)
     end
 end

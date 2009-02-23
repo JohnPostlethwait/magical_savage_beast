@@ -2,10 +2,11 @@ class ModeratorsController < ApplicationController
   before_filter :login_required
 
   helper :forums
+  layout 'magical_savage_beast'
 
   def destroy
     Moderatorship.delete_all ['id = ?', params[:id]]
-    redirect_to user_path(params[:user_id])
+    redirect_to <%= singular_name %>_path(params[:<%= singular_name %>_id])
   end
   
   alias authorized? admin?

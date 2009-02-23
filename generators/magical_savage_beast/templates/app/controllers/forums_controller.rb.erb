@@ -6,6 +6,7 @@ class ForumsController < ApplicationController
   cache_sweeper :posts_sweeper, :only => [:create, :update, :destroy]
 
   helper :forums
+  layout 'magical_savage_beast'
 
   def index
     @forums = Forum.find_ordered
@@ -25,7 +26,7 @@ class ForumsController < ApplicationController
         (session[:forum_page] ||= Hash.new(1))[@forum.id] = params[:page].to_i if params[:page]
 
         @topics = @forum.topics.paginate :page => params[:page]
-        User.find(:all, :conditions => ['id IN (?)', @topics.collect { |t| t.replied_by }.uniq]) unless @topics.blank?
+        <%= class_name %>.find(:all, :conditions => ['id IN (?)', @topics.collect { |t| t.replied_by }.uniq]) unless @topics.blank?
       end
       format.xml { render :xml => @forum }
     end
@@ -64,7 +65,7 @@ class ForumsController < ApplicationController
 
   helper_method :admin?
   def admin?
-    logged_in? && current_user.admin?
+    logged_in? && current_<%= singular_name %>.admin?
   end
 
   alias authorized? admin?

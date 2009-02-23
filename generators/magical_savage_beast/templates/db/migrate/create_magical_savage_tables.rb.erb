@@ -11,19 +11,19 @@ class CreateMagicalSavageTables < ActiveRecord::Migration
 
     create_table "moderatorships", :force => true do |t|
       t.references :forum
-      t.references :<%= name %>
+      t.references :<%= singular_name %>
     end
 
     add_index "moderatorships", ["forum_id"], :name => "index_moderatorships_on_forum_id"
 
     create_table "monitorships", :force => true do |t|
       t.references  :topic
-      t.references  :<%= name %>
+      t.references  :<%= singular_name %>
       t.boolean     "active", :default => true
     end
 
     create_table "posts", :force => true do |t|
-      t.references  :<%= name %>
+      t.references  :<%= singular_name %>
       t.references  :topic
       t.references  :forum
       t.text        "body"
@@ -32,12 +32,12 @@ class CreateMagicalSavageTables < ActiveRecord::Migration
     end
 
     add_index "posts", ["forum_id", "created_at"], :name => "index_posts_on_forum_id"
-    add_index "posts", ["<%= name %>_id", "created_at"], :name => "index_posts_on_<%= name %>_id"
+    add_index "posts", ["<%= singular_name %>_id", "created_at"], :name => "index_posts_on_<%= singular_name %>_id"
     add_index "posts", ["topic_id", "created_at"], :name => "index_posts_on_topic_id"
 
     create_table "topics", :force => true do |t|
       t.references  :forum
-      t.references  :<%= name %>
+      t.references  :<%= singular_name %>
       t.string      "title"
       t.integer     "hits",         :default => 0
       t.integer     "sticky",       :default => 0

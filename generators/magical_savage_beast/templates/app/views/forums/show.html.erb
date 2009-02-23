@@ -10,7 +10,7 @@
 <%% unless @forum.moderators.empty? -%>
 <ul class="flat" style="margin-top:1em;">
 <%% @forum.moderators.each do |user| -%>
-  <li><%%= link_to user.display_name, user_path(user) %></li>
+  <li><%%= link_to user.display_name, <%= singular_name %>_path(user) %></li>
 <%% end -%>
 </ul>
 <%% else -%>

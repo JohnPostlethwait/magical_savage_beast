@@ -1,6 +1,5 @@
 class Moderatorship < ActiveRecord::Base
   belongs_to :forum
-  belongs_to :user
-  before_create { |r| count(:id, :conditions => ['forum_id = ? and user_id = ?', r.forum_id, r.user_id]).zero? }
-	  
+  belongs_to :<%= singular_name %>
+  before_create { |r| count(:id, :conditions => ['forum_id = ? and <%= singular_name %>_id = ?', r.forum_id, r.<%= singular_name %>_id]).zero? }
 end

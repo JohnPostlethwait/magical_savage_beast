@@ -8,6 +8,7 @@ class TopicsController < ApplicationController
   cache_sweeper :posts_sweeper, :only => [:create, :update, :destroy]
 
   helper :forums
+  layout 'magical_savage_beast'
 
   def index
     respond_to do |format|
@@ -31,9 +32,9 @@ class TopicsController < ApplicationController
         # keep track of when we last viewed this topic for activity indicators
         (session[:topics] ||= {})[@topic.id] = Time.now.utc if logged_in?
         # authors of topics don't get counted towards total hits
-        @topic.hit! unless logged_in? and @topic.user == current_user
+        @topic.hit! unless logged_in? and @topic.<%= singular_name %> == current_<%= singular_name %>
         @posts = @topic.posts.paginate :page => params[:page]
-        User.find(:all, :conditions => ['id IN (?)', @posts.collect { |p| p.user_id }.uniq]) unless @posts.blank?
+        <%= class_name %>.find(:all, :conditions => ['id IN (?)', @posts.collect { |p| p.<%= singular_name %>_id }.uniq]) unless @posts.blank?
         @post   = Post.new
       end
       format.xml do
@@ -54,7 +55,7 @@ class TopicsController < ApplicationController
       assign_protected
       @post       = @topic.posts.build(params[:topic])
       @post.topic = @topic
-      @post.user  = current_user
+      @post.<%= singular_name %>  = current_<%= singular_name %>
       # only save topic if post is valid so in the view topic will be a new record if there was an error
       @topic.body = @post.body # incase save fails and we go back to the form
       topic_saved = @topic.save if @post.valid?
@@ -92,9 +93,9 @@ class TopicsController < ApplicationController
   
   protected
     def assign_protected
-      @topic.user     = current_user if @topic.new_record?
+      @topic.<%= singular_name %> = current_<%= singular_name %> if @topic.new_record?
       # admins and moderators can sticky and lock topics
-      return unless admin? or current_user.moderator_of?(@topic.forum)
+      return unless admin? or current_<%= singular_name %>.moderator_of?(@topic.forum)
       @topic.sticky, @topic.locked = params[:topic][:sticky], params[:topic][:locked] 
       # only admins can move
       return unless admin?
@@ -107,17 +108,17 @@ class TopicsController < ApplicationController
     end
     
     def authorized?
-      %w(new create).include?(action_name) || @topic.editable_by?(current_user)
+      %w(new create).include?(action_name) || @topic.editable_by?(current_<%= singular_name %>)
     end
 
     def update_last_seen_at
       return unless logged_in?
 
-      current_user.last_seen_at = Time.now.utc
-      current_user.save
+      current_<%= singular_name %>.last_seen_at = Time.now.utc
+      current_<%= singular_name %>.save
     end
 
     def admin?
-      logged_in? && current_user.admin?
+      logged_in? && current_<%= singular_name %>.admin?
     end
 end

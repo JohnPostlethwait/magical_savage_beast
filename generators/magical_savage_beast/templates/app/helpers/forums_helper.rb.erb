@@ -26,16 +26,16 @@ module ForumsHelper
     "<img src='/plugin_assets/savage_beast/images/#{spinner}' style='display:none; vertical-align:middle;' id='#{id.to_s}_spinner'> "
   end
 
-  def avatar_for(user, size=32)
-    image_tag "http://www.gravatar.com/avatar.php?gravatar_id=#{MD5.md5(user.email)}&rating=PG&size=#{size}", :size => "#{size}x#{size}", :class => 'photo'
+  def avatar_for(<%= singular_name %>, size=32)
+    image_tag "http://www.gravatar.com/avatar.php?gravatar_id=#{MD5.md5(<%= singular_name %>.email)}&rating=PG&size=#{size}", :size => "#{size}x#{size}", :class => 'photo'
   end
   
   def beast_user_name
-    (current_user ? current_user.display_name : "Guest" )
+    (current_<%= singular_name %> ? current_<%= singular_name %>.display_name : "Guest" )
   end
   
   def beast_user_link
-    user_link = (current_user ? user_path(current_user) : "#")
+    user_link = (current_<%= singular_name %> ? <%= singular_name %>_path(current_<%= singular_name %>) : "#")
     link_to beast_user_name, user_link
   end
 
@@ -46,7 +46,7 @@ module ForumsHelper
 
   def search_posts_title
     returning(params[:q].blank? ? 'Recent Posts'[] : "Searching for"[] + " '#{h params[:q]}'") do |title|
-      title << " "+'by {user}'[:by_user,h(User.find(params[:user_id]).display_name)] if params[:user_id]
+      title << " "+'by {user}'[:by_user,h(<%= class_name %>.find(params[:<%= singular_name %>_id]).display_name)] if params[:<%= singular_name %>_id]
       title << " "+'in {forum}'[:in_forum,h(Forum.find(params[:forum_id]).name)] if params[:forum_id]
     end
   end
@@ -64,7 +64,7 @@ module ForumsHelper
     options = params[:q].blank? ? {} : {:q => params[:q]}
     prefix = rss ? 'formatted_' : ''
     options[:format] = 'rss' if rss
-    [[:user, :user_id], [:forum, :forum_id]].each do |(route_key, param_key)|
+    [[:user, :<%= singular_name %>_id], [:forum, :forum_id]].each do |(route_key, param_key)|
       return send("#{prefix}#{route_key}_posts_path", options.update(param_key => params[param_key])) if params[param_key]
     end
     options[:q] ? search_all_posts_path(options) : send("#{prefix}all_posts_path", options)
