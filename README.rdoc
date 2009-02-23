@@ -51,10 +51,6 @@
   classes. These will add some necessary functionality to these classes that 
   the original Savage Beast forums depended on.
 
-  Add this method to the top of your ApplicationController:
-
-    magical_savage_controller_methods
-
   And add this method to the top of your user model:
 
     acts_as_magical_savage_user
