@@ -1,11 +1,22 @@
 require 'md5'
 
-module ApplicationHelper
-  # convenient plugin point
+module ForumsHelper
+  # used to know if a topic has changed since we read it last
+  def recent_topic_activity(topic)
+    return false if not logged_in?
+    return topic.replied_at > ((session[:topics] && session[:topics][topic.id]) || 3.days.ago) # was: last_active.  TODO: Could implement something to look at the user
+  end
+
+  # used to know if a forum has changed since we read it last
+  def recent_forum_activity(forum)
+    return false unless logged_in? && forum.recent_topic
+    return forum.recent_topic.replied_at > ((session[:forums] && session[:forums][forum.id]) || 3.days.ago) # was: last_active.  TODO: Could implement something to look at the user
+  end
+
   def head_extras
   end
-	
-	def submit_tag(value = "Save Changes"[], options={} )
+  
+  def submit_tag(value = "Save Changes"[], options={} )
     or_option = options.delete(:or)
     return super + "<span class='button_or'>"+"or"[]+" " + or_option + "</span>" if or_option
     super
@@ -18,15 +29,15 @@ module ApplicationHelper
   def avatar_for(user, size=32)
     image_tag "http://www.gravatar.com/avatar.php?gravatar_id=#{MD5.md5(user.email)}&rating=PG&size=#{size}", :size => "#{size}x#{size}", :class => 'photo'
   end
-	
-	def beast_user_name
-		(current_user ? current_user.display_name : "Guest" )
-	end
-	
-	def beast_user_link
-		user_link = (current_user ? user_path(current_user) : "#")
-		link_to beast_user_name, user_link
-	end
+  
+  def beast_user_name
+    (current_user ? current_user.display_name : "Guest" )
+  end
+  
+  def beast_user_link
+    user_link = (current_user ? user_path(current_user) : "#")
+    link_to beast_user_name, user_link
+  end
 
   def feed_icon_tag(title, url)
     (@feed_icons ||= []) << { :url => url, :title => title }
