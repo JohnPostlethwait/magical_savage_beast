@@ -1,4 +1,4 @@
-Magical Savage Beast
+= Magical Savage Beast
 =====================
 
 == About Magical Savage Beast
@@ -63,3 +63,7 @@ Magical Savage Beast
   One last thing is the routes for the forum, add this to your routes.rb file:
 
     map.from_plugin :magical_savage_beast
+
+
+
+==
