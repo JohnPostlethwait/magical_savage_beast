@@ -52,3 +52,7 @@ Magical Savage Beast
   And add this method to the top of your user model:
 
     acts_as_magical_savage_user
+
+  One last thing is the routes for the forum, add this to your routes.rb file:
+
+    map.from_plugin :magical_savage_beast
