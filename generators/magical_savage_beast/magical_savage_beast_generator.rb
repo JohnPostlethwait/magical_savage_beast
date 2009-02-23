@@ -2,9 +2,9 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
   def manifest
     record do |m|
       # Checking for collisions in the controller class names.
-      m.class_collisions ForumsController, ModeratorsController, MonitorshipsController, PostsController, TopicsController
+      m.class_collisions 'ForumsController', 'ModeratorsController', 'MonitorshipsController', 'PostsController', 'TopicsController'
       # Checking for collisions in the model class names.
-      m.class_collisions Forum, Moderatorship, Monitorship, MonitorshipsSweeper, Post, PostsSweeper, Topic
+      m.class_collisions 'Forum', 'Moderatorship', 'Monitorship', 'MonitorshipsSweeper', 'Post', 'PostsSweeper', 'Topic'
 
       # Ensure the necessary directories exist.
       %w{ controllers models helpers }.each do |dir|
@@ -27,7 +27,7 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
       # m.template File.join('app', 'controllers', 'topics_controller.rb.erb'), File.join('app', 'controllers', 'topics_controller.rb')
 
       # Write the models to the model dir.
-      %w{ forum.rb moderatorship.rb monitorship.rb monitorship_sweeper.rb post.rb posts_sweeper.rb topic.rb }.each do |mod|
+      %w{ forum.rb moderatorship.rb monitorship.rb monitorships_sweeper.rb post.rb posts_sweeper.rb topic.rb }.each do |mod|
         m.template File.join('app', 'models', "#{mod}.erb"), File.join('app', 'models', mod)
       end
 
@@ -40,7 +40,7 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
       # m.template File.join('app', 'models', 'topic.rb.erb'), File.join('app', 'models', 'topic.rb')
 
       # Write the forum helper to the helper dir.
-      m.template File.join('app', 'helpers', 'forums_helper.rb.erb'), File.join('app', 'helper', 'forums_helper.rb')
+      m.template File.join('app', 'helpers', 'forums_helper.rb.erb'), File.join('app', 'helpers', 'forums_helper.rb')
 
       # Write the views to the views dir.
       # Forums
@@ -80,7 +80,7 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
       end
 
       # Create the migration file.
-      m.migration_template File.join('db', 'migrate', "create_savage_tables.rb.erb"), File.join('db','migrate'), { :migration_file_name => "create_savage_tables" }
+      m.migration_template File.join('db', 'migrate', "create_magical_savage_tables.rb.erb"), File.join('db','migrate'), { :migration_file_name => "create_magical_savage_tables" }
     end
   end
 end
