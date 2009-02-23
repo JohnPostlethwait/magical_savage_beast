@@ -20,24 +20,10 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
         m.template File.join('app', 'controllers', "#{cont}.erb"), File.join('app', 'controllers', cont)
       end
 
-      # m.template File.join('app', 'controllers', 'forums_controller.rb.erb'), File.join('app', 'controllers', 'forums_controller.rb')
-      # m.template File.join('app', 'controllers', 'moderators_controller.rb.erb'), File.join('app', 'controllers', 'moderators_controller.rb')
-      # m.template File.join('app', 'controllers', 'monitorships_controller.rb.erb'), File.join('app', 'controllers', 'monitorships_controller.rb')
-      # m.template File.join('app', 'controllers', 'posts_controller.rb.erb'), File.join('app', 'controllers', 'posts_controller.rb')
-      # m.template File.join('app', 'controllers', 'topics_controller.rb.erb'), File.join('app', 'controllers', 'topics_controller.rb')
-
       # Write the models to the model dir.
       %w{ forum.rb moderatorship.rb monitorship.rb monitorships_sweeper.rb post.rb posts_sweeper.rb topic.rb }.each do |mod|
         m.template File.join('app', 'models', "#{mod}.erb"), File.join('app', 'models', mod)
       end
-
-      # m.template File.join('app', 'models', 'forum.rb.erb'), File.join('app', 'models', 'forum.rb')
-      # m.template File.join('app', 'models', 'moderatorship.rb.erb'), File.join('app', 'models', 'moderatorship.rb')
-      # m.template File.join('app', 'models', 'monitorship.rb.erb'), File.join('app', 'models', 'monitorship.rb')
-      # m.template File.join('app', 'models', 'monitorship_sweeper.rb.erb'), File.join('app', 'models', 'monitorship_sweeper.rb')
-      # m.template File.join('app', 'models', 'post.rb.erb'), File.join('app', 'models', 'post.rb')
-      # m.template File.join('app', 'models', 'posts_sweeper.rb.erb'), File.join('app', 'models', 'posts_sweeper.rb')
-      # m.template File.join('app', 'models', 'topic.rb.erb'), File.join('app', 'models', 'topic.rb')
 
       # Write the forum helper to the helper dir.
       m.template File.join('app', 'helpers', 'forums_helper.rb.erb'), File.join('app', 'helpers', 'forums_helper.rb')
@@ -70,7 +56,7 @@ class MagicalSavageBeastGenerator < Rails::Generator::NamedBase
         m.template File.join('app', 'views', 'posts', "#{view}.erb"), File.join('app', 'views', 'posts', output_view)
       end
       # Topics
-      %w{ _form.html edit.html index.html new.html show.html show.rss.builder }.each do |view|
+      %w{ _form.html edit.html new.html show.html show.rss.builder }.each do |view|
         output_view = view
         if File.extname(view) == '.html'
           output_view = "#{view}.erb"

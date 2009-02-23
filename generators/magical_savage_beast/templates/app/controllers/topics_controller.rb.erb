@@ -2,8 +2,8 @@ class TopicsController < ApplicationController
   before_filter :find_forum_and_topic, :except => :index
   before_filter :login_required, :only => [:new, :create, :edit, :update, :destroy]
 
-	# @WBH@ TODO: This uses the caches_formatted_page method.  In the main Beast project, this is implemented via a Config/Initializer file.  Not
-	# sure what analogous place to put it in this plugin.  It don't work in the init.rb  
+  # @WBH@ TODO: This uses the caches_formatted_page method.  In the main Beast project, this is implemented via a Config/Initializer file.  Not
+  # sure what analogous place to put it in this plugin.  It don't work in the init.rb  
   #caches_formatted_page :rss, :show
   cache_sweeper :posts_sweeper, :only => [:create, :update, :destroy]
 
@@ -48,9 +48,9 @@ class TopicsController < ApplicationController
   
   def create
     topic_saved, post_saved = false, false
-		# this is icky - move the topic/first post workings into the topic model?
+    # this is icky - move the topic/first post workings into the topic model?
     Topic.transaction do
-	    @topic  = @forum.topics.build(params[:topic])
+      @topic  = @forum.topics.build(params[:topic])
       assign_protected
       @post       = @topic.posts.build(params[:topic])
       @post.topic = @topic
@@ -60,15 +60,15 @@ class TopicsController < ApplicationController
       topic_saved = @topic.save if @post.valid?
       post_saved = @post.save 
     end
-		
-		if topic_saved && post_saved
-			respond_to do |format| 
-				format.html { redirect_to forum_topic_path(@forum, @topic) }
-				format.xml  { head :created, :location => formatted_topic_url(:forum_id => @forum, :id => @topic, :format => :xml) }
-			end
-		else
-			render :action => "new"
-		end
+    
+    if topic_saved && post_saved
+      respond_to do |format| 
+        format.html { redirect_to forum_topic_path(@forum, @topic) }
+        format.xml  { head :created, :location => formatted_topic_url(:forum_id => @forum, :id => @topic, :format => :xml) }
+      end
+    else
+      render :action => "new"
+    end
   end
   
   def update
@@ -108,5 +108,16 @@ class TopicsController < ApplicationController
     
     def authorized?
       %w(new create).include?(action_name) || @topic.editable_by?(current_user)
+    end
+
+    def update_last_seen_at
+      return unless logged_in?
+
+      current_user.last_seen_at = Time.now.utc
+      current_user.save
+    end
+
+    def admin?
+      logged_in? && current_user.admin?
     end
 end

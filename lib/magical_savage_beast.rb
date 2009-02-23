@@ -9,13 +9,14 @@ module MagicalSavageBeast
         def acts_as_magical_savage_user
           self.send :include, MagicalSavageBeast::Acts::MagicalSavageUser::InstanceMethods
 
-          class_eval do
-            has_many :moderatorships, :dependent => :destroy
-            has_many :forums, :through => :moderatorships, :order => "#{Forum.table_name}.name"
-            has_many :posts
-            has_many :topics
-            has_many :monitorships
-            has_many :monitored_topics, :through => :monitorships, :conditions => ["#{Monitorship.table_name}.active = ?", true], :order => "#{Topic.table_name}.replied_at desc", :source => :topic
+          class_eval do %q{
+              has_many :moderatorships, :dependent => :destroy
+              has_many :forums, :through => :moderatorships, :order => "#{Forum.table_name}.name"
+              has_many :posts
+              has_many :topics
+              has_many :monitorships
+              has_many :monitored_topics, :through => :monitorships, :conditions => ["#{Monitorship.table_name}.active = ?", true], :order => "#{Topic.table_name}.replied_at desc", :source => :topic
+            }
           end
         end
       end
@@ -49,36 +50,6 @@ module MagicalSavageBeast
           options[:except] ||= []
           super
         end
-      end
-    end
-  end
-
-  module ControllerMethods
-    def self.included(base)
-      base.extend ClassMethods
-    end
-
-    module ClassMethods
-      def magical_savage_controller_methods
-        self.send :include, MagicalSavageBeast::ControllerMethods::InstanceMethods
-
-        class_eval do
-          helper_method :admin?
-        end
-      end
-    end
-
-    module InstanceMethods
-      protected
-      def update_last_seen_at
-        return unless logged_in?
-
-        current_user.last_seen_at = Time.now.utc
-        current_user.save
-      end
-
-      def admin?
-        logged_in? && current_user.admin?
       end
     end
   end

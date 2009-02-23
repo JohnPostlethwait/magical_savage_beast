@@ -1,8 +1,8 @@
-Description:
-    Explain the generator
+This generator will place the controllers, models, helpers, views and routes 
+into your rails application.
 
 Example:
-    ./script/generate magical_savage_beast Thing
+    The only argument taken is the name of the model that represents your 
+    users. IE:
 
-    This will create:
-        what/will/it/create
+    ./script/generate magical_savage_beast user

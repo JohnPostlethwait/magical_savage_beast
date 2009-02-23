@@ -1,17 +1,17 @@
-<%= render :partial => "layouts/head" %>
+<%%= render :partial => "layouts/head" %>
 
 <div id="container">
 
 <div id="content">
   
-<%= content_tag 'p', h(flash[:notice]), :class => 'notice' if flash[:notice] %>
-<%= content_tag 'p', h(flash[:error]), :class => 'notice error' if flash[:error] %>
+<%%= content_tag 'p', h(flash[:notice]), :class => 'notice' if flash[:notice] %>
+<%%= content_tag 'p', h(flash[:error]), :class => 'notice error' if flash[:error] %>
   
-<%= yield %>
+<%%= yield %>
 </div>
 
 <div id="right">
-  <%= yield :right %>
+  <%%= yield :right %>
 </div>
 
 <br style="clear:both;" />
