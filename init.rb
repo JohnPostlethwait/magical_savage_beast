@@ -1,34 +1,37 @@
-ActionView::Base.send :include, SavageBeast::AuthenticationSystem
-ActionController::Base.send :include, SavageBeast::AuthenticationSystem
+require 'magical_savage_beast'
 
-# FIX for engines model reloading issue in development mode
-if ENV['RAILS_ENV'] != 'production'
-	load_paths.each do |path|
-		Dependencies.load_once_paths.delete(path)
-	end
+ActiveRecord::Base.class_eval do
+  include MagicalSavageBeast::Acts::MagicalSavageUser
 end
+
+ActionController::Base.class_eval do
+  include MagicalSavageBeast::ControllerMethods
+end
+
+# TODO: Lets just make restful_authentication a requirement.
+# ActionView::Base.send :include, SavageBeast::AuthenticationSystem
+# ActionController::Base.send :include, SavageBeast::AuthenticationSystem
 
 # Include your application configuration below
 # @WBH@ would be nice for this to not be necessary somehow...
 # PASSWORD_SALT = '48e45be7d489cbb0ab582d26e2168621' unless Object.const_defined?(:PASSWORD_SALT)
-Module.class_eval do
-  def expiring_attr_reader(method_name, value)
-    class_eval(<<-EOS, __FILE__, __LINE__)
-      def #{method_name}
-        class << self; attr_reader :#{method_name}; end
-        @#{method_name} = eval(%(#{value}))
-      end
-    EOS
-  end
-end
+# Module.class_eval do
+#   def expiring_attr_reader(method_name, value)
+#     class_eval(<<-EOS, __FILE__, __LINE__)
+#       def #{method_name}
+#         class << self; attr_reader :#{method_name}; end
+#         @#{method_name} = eval(%(#{value}))
+#       end
+#     EOS
+#   end
+# end
 
-
-# All this is given in engines plugin
+# TODO: make the generator add "map.from_plugin :magical_savage_beast" to the routes
 # Define the means by which to add our own routing to Rails' routing
 class ActionController::Routing::RouteSet::Mapper
-	def from_plugin(name)
-		eval File.read(File.join(RAILS_ROOT, "vendor/plugins/#{name}/routes.rb"))
-	end
+  def from_plugin(name)
+    eval File.read(File.join(RAILS_ROOT, "vendor/plugins/#{name}/routes.rb"))
+  end
 end
 
 #--------------------------------------------------------------------------------
@@ -53,23 +56,25 @@ end
 
 #view_path = File.join(directory, 'app', 'views')
 #if File.exist?(view_path)
-#	ActionController::Base.view_paths.insert(1, view_path) # push it just underneath the app
+# ActionController::Base.view_paths.insert(1, view_path) # push it just underneath the app
 #end
 
 # Include helpers
 #ActionView::Base.send :include, ForumsHelper
 #ActionView::Base.send :include, ApplicationHelper
-#ActionView::Base.send :include, ModeratorsHelper
-#ActionView::Base.send :include, PostsHelper
-#ActionView::Base.send :include, TopicsHelper
 #--------------------------------------------------------------------------------
+
+%w{ models controllers helpers views }.each do |dir|
+  path = File.join(directory, 'lib', dir)
+  $LOAD_PATH << path
+  ActiveSupport::Dependencies.load_paths << path
+  ActiveSupport::Dependencies.load_once_paths.delete(path)
+end
 
 begin
   require 'gettext/rails'
   GetText.locale = "nl" # Change this to your preference language
-  #puts "GetText found!"
 rescue MissingSourceFile, LoadError
-  #puts "GetText not found.  Using English."
   class ActionView::Base
     def _(s)
       s
