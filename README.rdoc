@@ -1,5 +1,4 @@
 = Magical Savage Beast
-=====================
 
 == About Magical Savage Beast
   Magical Savage Beast is an attempt to get the Savage Beast forums to work 
@@ -19,7 +18,7 @@
   while using it.
 
 == Public Repository
-  git://github.com/JohnPostlethwait/magical_savage_beast.git
+  +typewriter+::git://github.com/JohnPostlethwait/magical_savage_beast.git
 
 == Requirements & Dependencies
   Yes, unfortunately, this plugin makes you install other plugins and gems. As 
@@ -32,21 +31,21 @@
 
   Install the RedCloth gem, latest is fine:
 
-    sudo gem install Redcloth
+    +typewriter+::sudo gem install Redcloth
 
   Install the necessary plugins which this plugin depends on. If you already 
   have these you can probably safely skip them:
 
-    script/plugin install git://github.com/rails/acts_as_list.git
-    script/plugin install git://github.com/defunkt/gibberish.git
-    script/plugin install http://svn.techno-weenie.net/projects/plugins/white_list/
-    script/plugin install http://svn.techno-weenie.net/projects/plugins/white_list_formatted_content/
-    script/plugin install git://github.com/mislav/will_paginate.git
+    +typewriter+::script/plugin install git://github.com/rails/acts_as_list.git
+    +typewriter+::script/plugin install git://github.com/defunkt/gibberish.git
+    +typewriter+::script/plugin install http://svn.techno-weenie.net/projects/plugins/white_list/
+    +typewriter+::script/plugin install http://svn.techno-weenie.net/projects/plugins/white_list_formatted_content/
+    +typewriter+::script/plugin install git://github.com/mislav/will_paginate.git
 
 == Installation
   Run the generator to add the necessary migration to your application:
 
-    script/generate magical_savage_beast name_of_your_user_model_here
+    +typewriter+::script/generate magical_savage_beast name_of_your_user_model_here
 
   We now need to implement two method calls into two of your application 
   classes. These will add some necessary functionality to these classes that 
@@ -54,16 +53,12 @@
 
   Add this method to the top of your ApplicationController:
 
-    magical_savage_controller_methods
+    +typewriter+::magical_savage_controller_methods
 
   And add this method to the top of your user model:
 
-    acts_as_magical_savage_user
+    +typewriter+::acts_as_magical_savage_user
 
   One last thing is the routes for the forum, add this to your routes.rb file:
 
-    map.from_plugin :magical_savage_beast
-
-
-
-==
+    +typewriter+::map.from_plugin :magical_savage_beast
